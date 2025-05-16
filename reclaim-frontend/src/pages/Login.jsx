@@ -36,6 +36,8 @@ const Login = () => {
       if (response.status === 200) {
         setSuccess("Login successful! Redirecting...");
         setError("");
+        localStorage.setItem("user", JSON.stringify(response.data));
+
 
         // Redirect after a short delay (or immediately)
         setTimeout(() => {

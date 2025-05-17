@@ -20,7 +20,7 @@ const AdminPanel = () => {
   const handleVerify = async (itemId) => {
     try {
       await axios.put(`http://localhost:8080/items/verify/${itemId}`);
-      fetchUnverifiedItems(); // Refresh list after verification
+      fetchUnverifiedItems(); 
     } catch (err) {
       console.log(err);
       alert("Verification failed");

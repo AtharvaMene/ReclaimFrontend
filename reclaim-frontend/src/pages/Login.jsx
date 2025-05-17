@@ -42,7 +42,7 @@ const Login = () => {
         setError("");
         localStorage.setItem("user", JSON.stringify(response.data));
 
-        // Redirect after a short delay (or immediately)
+        
         setTimeout(() => {
           navigate("/dashboard");
         }, 1500);

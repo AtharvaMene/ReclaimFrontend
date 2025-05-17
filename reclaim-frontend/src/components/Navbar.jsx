@@ -12,7 +12,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md py-3 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and brand */}
+          
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <svg 
@@ -29,7 +29,7 @@ const Navbar = () => {
             </Link>
           </div>
           
-          {/* Desktop Navigation */}
+       
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
               <Link 
@@ -59,7 +59,7 @@ const Navbar = () => {
             </div>
           </div>
           
-          {/* Mobile menu button */}
+         
           <div className="md:hidden flex items-center">
             <button 
               onClick={toggleMobileMenu}
@@ -67,7 +67,7 @@ const Navbar = () => {
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
-              {/* Icon when menu is closed */}
+        
               {!isMobileMenuOpen && (
                 <svg 
                   className="block h-6 w-6" 
@@ -80,7 +80,7 @@ const Navbar = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
-              {/* Icon when menu is open */}
+            
               {isMobileMenuOpen && (
                 <svg 
                   className="block h-6 w-6" 
@@ -98,7 +98,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu, show/hide based on menu state */}
+    
       {isMobileMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">

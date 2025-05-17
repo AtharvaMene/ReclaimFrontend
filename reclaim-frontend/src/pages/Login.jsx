@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
+import { useContext } from "react";
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,6 +29,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    
     if (!formData.email || !formData.password) {
       setError("Please enter both email and password.");
       return;
@@ -34,6 +39,7 @@ const Login = () => {
       const response = await axios.post("http://localhost:8080/users/login", formData);
 
       if (response.status === 200) {
+        login(response.data); 
         setSuccess("Login successful! Redirecting...");
         setError("");
         localStorage.setItem("user", JSON.stringify(response.data));

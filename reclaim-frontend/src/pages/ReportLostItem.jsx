@@ -1,24 +1,25 @@
-// src/pages/ReportLostItem.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";  // Adjust path if needed
 
 const ReportLostItem = () => {
+  const { user } = useContext(AuthContext);  // Get logged-in user from context
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     location: "",
+    status: "LOST", // Default to LOST
     dateReported: "",
   });
-  const [error, setError] = useState("");
+
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  const [matches, setMatches] = useState([]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
     setSuccess("");
   };
@@ -26,33 +27,41 @@ const ReportLostItem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.name || !formData.location) {
-      setError("Please fill in all required fields.");
+    if (!user || !user.id) {
+      setError("You must be logged in to report an item.");
       return;
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/items/report",
-        formData
-      );
+      // Add reportedBy user ID as object
+      const payload = {
+        ...formData,
+        reportedBy: {
+          id: user.id,
+        },
+      };
 
-      if (response.status === 201 || response.status === 200) {
-        setSuccess("Lost item reported successfully!");
+      const response = await axios.post("http://localhost:8080/items/report", payload);
+      if (response.status === 200 || response.status === 201) {
+        setSuccess("Item reported successfully.");
         setFormData({
           name: "",
           description: "",
           location: "",
+          status: "LOST",
           dateReported: "",
         });
-        // Optionally redirect after delay
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000);
+
+        // Get the ID of the newly reported item
+        const reportedItemId = response.data.id;
+
+        // Fetch possible matches from backend
+        const matchesResponse = await axios.get(`http://localhost:8080/items/matches/${reportedItemId}`);
+        setMatches(matchesResponse.data);
       }
     } catch (err) {
-      setError("Failed to report lost item. Please try again.");
+      setError("Failed to report item.");
+      console.error(err);
     }
   };
 
@@ -60,70 +69,75 @@ const ReportLostItem = () => {
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-semibold mb-6 text-center">Report Lost Item</h2>
 
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      {success && <div className="mb-4 text-green-600">{success}</div>}
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+      {success && <div className="text-green-600 mb-4">{success}</div>}
 
       <form onSubmit={handleSubmit}>
-        <label className="block mb-2 font-medium" htmlFor="name">
-          Item Name*
-        </label>
         <input
-          id="name"
-          name="name"
           type="text"
+          name="name"
+          placeholder="Item name"
           value={formData.name}
           onChange={handleChange}
-          className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Item name"
           required
+          className="w-full mb-4 px-3 py-2 border rounded"
         />
-
-        <label className="block mb-2 font-medium" htmlFor="description">
-          Description
-        </label>
-        <textarea
-          id="description"
+        <input
+          type="text"
           name="description"
+          placeholder="Item description"
           value={formData.description}
           onChange={handleChange}
-          className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Additional details"
-          rows={3}
+          required
+          className="w-full mb-4 px-3 py-2 border rounded"
         />
-
-        <label className="block mb-2 font-medium" htmlFor="location">
-          Location Lost*
-        </label>
         <input
-          id="location"
-          name="location"
           type="text"
+          name="location"
+          placeholder="Where was it lost?"
           value={formData.location}
           onChange={handleChange}
-          className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Where item was lost"
           required
+          className="w-full mb-4 px-3 py-2 border rounded"
         />
-
-        <label className="block mb-2 font-medium" htmlFor="dateReported">
-          Date Reported
-        </label>
         <input
-          id="dateReported"
-          name="dateReported"
           type="date"
+          name="dateReported"
           value={formData.dateReported}
           onChange={handleChange}
-          className="w-full mb-6 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+          className="w-full mb-4 px-3 py-2 border rounded"
         />
+        <select
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          className="w-full mb-4 px-3 py-2 border rounded"
+        >
+          <option value="LOST">Lost</option>
+          <option value="FOUND">Found</option>
+        </select>
 
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
-          Report Item
+          Submit
         </button>
       </form>
+
+      {matches.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold mb-2">Possible Matches:</h3>
+          <ul>
+            {matches.map((item) => (
+              <li key={item.id} className="mb-2 border p-2 rounded">
+                <strong>{item.name}</strong> - {item.description} (Status: {item.status})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

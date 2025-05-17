@@ -1,12 +1,26 @@
-import React from 'react';
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold">Welcome, {user?.name || 'User'}!</h1>
-      <p className="mt-4">This is the dashboard.</p>
+    <div>
+      <h1>Dashboard</h1>
+        
+      <Link to="/report-lost-item" className="btn btn-primary">
+        Report Lost Item
+      </Link>
+
+      <nav className="mb-6">
+        <Link className="mr-4 text-blue-600" to="/items/LOST">
+          View Lost Items
+        </Link>
+        <Link className="mr-4 text-blue-600" to="/items/FOUND">
+          View Found Items
+        </Link>
+        <Link className="text-blue-600" to="/items">
+          View All Items
+        </Link>
+      </nav>
+      {/* other dashboard content */}
     </div>
   );
 };

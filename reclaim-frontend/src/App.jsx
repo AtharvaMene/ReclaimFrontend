@@ -5,7 +5,10 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import ReportLostItem from "./pages/ReportLostItem";
-
+import ItemsList from "./components/ItemList";
+import AdminVerification from "./components/AdminVerification";
+import AdminPanel from "./pages/AdminPanel";
+import ItemDetails from "./components/ItemDetails";
 
 function App() {
   return (
@@ -25,13 +28,27 @@ function App() {
         />
 
         <Route
-          path="/report"
+          path="/report-lost-item"
           element={
             <ProtectedRoute>
               <ReportLostItem />
             </ProtectedRoute>
           }
         />
+
+        <Route path="/items" element={<ItemsList />} />
+        <Route path="/items/status/:status" element={<ItemsList />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route
+          path="/admin/verify-items"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <AdminVerification />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/items/:id" element={<ItemDetails />} />
       </Routes>
     </>
   );
